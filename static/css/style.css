@@ -1,0 +1,1403 @@
+/* Stiluri de bază */
+.search-container {
+    padding: 20px;
+}
+
+/* Stiluri pentru file */
+.nav-tabs .nav-link {
+    padding: 15px 25px;
+    font-weight: 500;
+}
+
+.nav-tabs .nav-link.active {
+    border-bottom: 3px solid #0d6efd;
+}
+
+/* Stiluri pentru formularul de căutare */
+.search-form {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+/* Container pentru rezultate */
+.results-container {
+    max-height: 600px;
+    overflow-y: auto;
+    padding: 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+}
+
+.result-card {
+    margin-bottom: 15px;
+    transition: transform 0.2s;
+}
+
+.result-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Secțiunea de istoric */
+.history-drawer {
+    position: fixed;
+    right: -350px;
+    top: 0;
+    width: 350px;
+    height: 100%;
+    background: #fff;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+    transition: right 0.3s;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.history-drawer.open {
+    right: 0;
+}
+
+.history-toggle {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1001;
+}
+
+/* Stiluri existente pentru operator */
+.operator-group .operator-group {
+    margin-left: 20px; /* Indentează operatorii imbricați */
+}
+.operator-group .operator-group .operator-group {
+    margin-left: 40px; /* Continuă modelul pentru niveluri mai adânci de indentare */
+}
+.operator-group .operator-group .operator-group .operator-group {
+    margin-left: 60px; /* Continuă modelul pentru niveluri mai adânci de indentare */
+}
+/* Ajustează dimensiunile butoanelor și inputurilor în grupurile de operatori înrudiți */
+.operator-group .operator-group .btn,
+.operator-group .operator-group .form-control,
+.operator-group .operator-group .form-select {
+    transform: scale(0.9); /* Reduce dimensiunea operatorilor imbricați cu 10% comparativ cu operatorul părinte */
+    transform-origin: top left; /* Fixează punctul de transformare în colțul din stânga sus */
+}
+.operator-group .operator-group .operator-group .btn,
+.operator-group .operator-group .operator-group .form-control,
+.operator-group .operator-group .operator-group .form-select {
+    transform: scale(0.81); /* Reduce dimensiunea la 81% pentru nivelul următor */
+    transform-origin: top left;
+}
+.operator-group .operator-group .operator-group .operator-group .btn,
+.operator-group .operator-group .operator-group .operator-group .form-control,
+.operator-group .operator-group .operator-group .operator-group .form-select {
+    transform: scale(0.729); /* Reduce dimensiunea la 72.9% pentru nivelul următor */
+    transform-origin: top left;
+}
+/* Continuă modelul pentru niveluri mai adânci de indentare */
+.operator-group .form-text {
+    font-size: 0.875em; /* Utilizează dimensiunea mică a textului din Bootstrap */
+}
+/* Asigură că descrierea operatorului ocupă toată lățimea disponibilă */
+.operator-description {
+    font-size: 0.875em; /* Utilizează dimensiunea mică a textului din Bootstrap */
+    width: 100%; /* Setează lățimea la 100% */
+    margin-top: 5px; /* Adaugă un spațiu de 5px deasupra descrierii */
+}
+/* Ajustează dimensiunile inputurilor și dropdown-urilor în grupurile de operatori */
+.operator-group .form-control,
+.operator-group .form-select {
+    font-size: 0.75em; /* Reduce dimensiunea fontului la 75% */
+    padding: 0.375rem 0.75rem; /* Ajustează padding-ul pentru un aspect mai compact */
+    height: auto; /* Asigură că înălțimea se adaptează la conținut */
+}
+/* Ajustează dimensiunile butoanelor în grupurile de operatori */
+.operator-group .btn {
+    font-size: 0.75em; /* Reduce dimensiunea fontului la 75% */
+    padding: 0.375rem 0.75rem; /* Ajustează padding-ul pentru o potrivire mai bună */
+}
+/* Opțional: Ajustează dimensiunile fontului etichetelor */
+.operator-group .form-label {
+    font-size: 0.75em; /* Reduce dimensiunea fontului la 75% */
+}
+/* Ajustează dimensiunea butonului 'Adaugă operator' */
+.btn-add-operator {
+    font-size: 0.75em; /* Reduce dimensiunea fontului la 75% */
+    padding: 0.375rem 0.75rem; /* Ajustează padding-ul pentru un aspect mai compact */
+}
+/* Ajustează dimensiunile câmpurilor de cuvinte cheie și previzualizarea interogării */
+#keyword,
+#query_preview {
+    font-size: 0.75em; /* Reduce dimensiunea fontului la 75% */
+    padding: 0.375rem 0.75rem; /* Ajustează padding-ul pentru un aspect mai compact */
+    height: auto; /* Asigură că înălțimea se adaptează la conținut */
+}
+/* Ajustează dimensiunile fontului etichetelor */
+.form-label {
+    font-size: 0.75em; /* Reduce dimensiunea fontului la 75% */
+}
+/* Adaugă stiluri pentru alinierea câmpurilor wildcard */
+.wildcard-text-container {
+    display: flex;
+    align-items: center;
+}
+
+/* Asigură alinierea verticală a elementelor din wildcard */
+.wildcard-text-container input {
+    margin-bottom: 0;
+}
+
+.wildcard-text-container span {
+    margin: 0 5px;
+    align-self: center;
+}
+
+/* Adaugă stiluri pentru alinierea câmpurilor interval */
+.range-text-container {
+    display: flex;
+    align-items: center;
+}
+
+.range-text-container input {
+    margin-bottom: 0;
+}
+
+.range-text-container .separator {
+    margin: 0 5px;
+    align-self: center;
+}
+
+.search-container {
+    display: flex;
+    width: 100%;
+    gap: 20px;
+}
+
+.search-half {
+    flex: 1;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+/* Adaugă aceste stiluri noi */
+.results-section {
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.results-container {
+    max-height: none;
+    border: none;
+    padding: 0;
+}
+
+.result-card {
+    border: 1px solid rgba(0,0,0,.125);
+    margin-bottom: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.result-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Actualizează stilurile existente */
+.search-container {
+    display: block;
+    width: 100%;
+}
+
+.search-form {
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+}
+
+.history-item {
+    padding: 15px;
+    border-bottom: 1px solid #dee2e6;
+    transition: background-color 0.2s;
+}
+
+.history-item:hover {
+    background-color: #f8f9fa;
+}
+
+.history-meta {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.history-query {
+    font-weight: 500;
+    margin: 8px 0;
+}
+
+.history-stats {
+    display: flex;
+    gap: 15px;
+    font-size: 0.875rem;
+}
+
+.history-badge {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+}
+
+.badge-google {
+    background-color: #4285f4;
+    color: white;
+}
+
+.badge-twitter {
+    background-color: #1da1f2;
+    color: white;
+}
+.history-item {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.history-header {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    cursor: pointer;
+}
+
+.history-content {
+    padding: 1rem;
+}
+
+.change-indicator {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    margin-right: 0.5rem;
+}
+
+.change-new {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.change-removed {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.change-modified {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.result-comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.result-column {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+.highlight-new {
+    background-color: rgba(40, 167, 69, 0.1);
+    border-left: 3px solid #28a745;
+}
+
+.highlight-removed {
+    background-color: rgba(220, 53, 69, 0.1);
+    border-left: 3px solid #dc3545;
+}
+
+.highlight-changed {
+    background-color: rgba(255, 193, 7, 0.1);
+    border-left: 3px solid #ffc107;
+}
+/* Adaugă stil pentru containerul titlului centrat */
+.title-container {
+    text-align: center;
+    margin: 2rem 0;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.title-container h1 {
+    margin: 0;
+    color: #0d6efd;
+}
+
+.title-container i {
+    margin-right: 0.5rem;
+    color: #0d6efd;
+}
+
+/* Actualizează stilurile pentru badge-uri și iconițe de istoric */
+.google-badge {
+    background-color: #4285f4;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+}
+
+.twitter-badge {
+    background-color: #1da1f2;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+}
+
+/* Adaugă contrast pentru iconițele din istoric */
+.history-stats i {
+    color: #495057;
+    margin-right: 0.25rem;
+}
+
+.history-meta i {
+    color: #495057;
+    margin-right: 0.25rem;
+}
+
+/* Stiluri pentru filele de istoric */
+.nav-tabs .nav-link i {
+    color: #495057;
+    margin-right: 0.5rem;
+}
+
+.nav-tabs .nav-link.active i {
+    color: #0d6efd;
+}
+
+/* Actualizează butoanele de tip acordeon */
+.accordion-button i {
+    color: #495057;
+    margin-right: 0.5rem;
+}
+
+/* Adaugă iconițe la filele de filtrare istoric */
+.history-filter-tabs .nav-link i {
+    color: #495057;
+    margin-right: 0.5rem;
+}
+
+/* Stiluri pentru rezultatele comparării */
+.comparison-container {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.comparison-header {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-bottom: 1px solid #dee2e6;
+    font-weight: 500;
+}
+
+.comparison-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.comparison-column {
+    background: #fff;
+    padding: 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+}
+
+.comparison-title {
+    font-weight: 500;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.diff-added {
+    background-color: #d4edda;
+    border-left: 3px solid #28a745;
+    padding: 0.5rem;
+    margin: 0.25rem 0;
+}
+
+.diff-removed {
+    background-color: #f8d7da;
+    border-left: 3px solid #dc3545;
+    padding: 0.5rem;
+    margin: 0.25rem 0;
+}
+
+.diff-changed {
+    background-color: #fff3cd;
+    border-left: 3px solid #ffc107;
+    padding: 0.5rem;
+    margin: 0.25rem 0;
+}
+
+.diff-indicator {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+}
+
+.diff-indicator.added { background-color: #d4edda; color: #155724; }
+.diff-indicator.removed { background-color: #f8d7da; color: #721c24; }
+.diff-indicator.changed { background-color: #fff3cd; color: #856404; }
+.changes-details {
+    border-left: 3px solid #ffc107;
+    padding-left: 1rem;
+    margin-top: 1rem;
+}
+
+.metric-diff {
+    padding: 0.25rem 0;
+    font-size: 0.875rem;
+}
+
+.diff-old, .diff-new {
+    border-radius: 4px;
+    margin: 0.25rem 0;
+}
+
+.content-changes {
+    font-size: 0.875rem;
+}
+.instance-header {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.instance-header:hover {
+    background-color: rgba(0,0,0,0.03);
+}
+
+.toggle-icon {
+    transition: transform 0.2s;
+}
+
+.instance-results {
+    transition: all 0.3s ease-in-out;
+}
+
+.instance-results.show {
+    display: block;
+}
+
+/* Adaugă stiluri noi pentru lista de instanțe și comparație */
+.instances-list {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+}
+
+.instance-selector {
+    padding: 0.75rem;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.instance-selector:hover {
+    background-color: #f8f9fa;
+}
+
+.comparison-grid {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.comparison-column {
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 1rem;
+}
+
+.comparison-header {
+    background-color: #f8f9fa;
+    padding: 0.75rem;
+    border-bottom: 1px solid #dee2e6;
+    font-weight: 500;
+    margin: -1rem -1rem 1rem -1rem;
+}
+
+/* Stiluri pentru evidențierea diferențelor */
+.diff-new {
+    background-color: #d4edda;
+    border-left: 3px solid #28a745;
+    padding: 0.5rem;
+    margin: 0.25rem 0;
+}
+
+.diff-removed {
+    background-color: #f8d7da;
+    border-left: 3px solid #dc3545;
+    padding: 0.5rem;
+    margin: 0.25rem 0;
+    text-decoration: line-through;
+}
+
+.diff-changed {
+    background-color: #fff3cd;
+    border-left: 3px solid #ffc107;
+    padding: 0.5rem;
+    margin: 0.25rem 0;
+}
+
+.metric-diff {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.875rem;
+    margin-right: 0.5rem;
+}
+
+.metric-increased {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.metric-decreased {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Actualizează stilurile pentru grila de comparație */
+.comparison-grid-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 1rem; /* Pentru a preveni tăierea umbrei */
+}
+
+.comparison-grid {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1rem;
+    min-width: min-content; /* Permite grilei să crească dincolo de lățimea containerului */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Face coloanele responsive */
+}
+
+.comparison-column {
+    min-width: 300px; /* Setează o lățime minimă pentru coloane */
+    max-width: 400px; /* Setează o lățime maximă pentru coloane */
+    height: fit-content;
+}
+
+/* Stilizează scrollbar-ul pentru o vizibilitate mai bună */
+.comparison-grid-wrapper::-webkit-scrollbar {
+    height: 8px;
+}
+
+.comparison-grid-wrapper::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.comparison-grid-wrapper::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.comparison-grid-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Adaugă aceste stiluri în secțiunea CSS existentă */
+.diff-neutral {
+    background-color: #f8f9fa;
+    color: #212529;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+.diff-add {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+.diff-remove {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 0 2px;
+    border-radius: 2px;
+    text-decoration: line-through;
+}
+
+/* Actualizează stilurile pentru diferențe */
+.diff-neutral {
+    color: #6c757d;  /* Gri pentru textul neutru */
+    padding: 0 2px;
+}
+
+.diff-add {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+.diff-remove {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+/* Stil pentru instanțele neutre */
+.neutral-instance {
+    opacity: 0.8;
+}
+
+.neutral-instance .diff-neutral {
+    background-color: #f8f9fa;
+    border-radius: 2px;
+}
+
+.diff-modified {
+    background-color: #fff3cd;  /* Galben deschis pentru textul modificat */
+    color: #856404;
+    padding: 0 2px;
+    border-radius: 2px;
+    text-decoration: none;
+    border-bottom: 1px dotted #856404;
+}
+
+.diff-neutral {
+    color: #212529;  /* Culoare normală pentru textul neutru */
+}
+
+.diff-add {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+.diff-unchanged {
+    opacity: 0.7;  /* Reduce opacitatea pentru textul neschimbat */
+}
+
+/* Elimină stilurile pentru textul eliminat în instanța curentă */
+.metrics-container {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.metric-item {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+}
+
+.metric-value {
+    font-weight: 500;
+}
+
+.metric-diff {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.metric-diff.text-success {
+    color: #28a745 !important;
+}
+
+.metric-diff.text-danger {
+    color: #dc3545 !important;
+}
+
+.bi-chat, .bi-arrow-repeat, .bi-heart {
+    font-size: 1rem;
+    color: #6c757d;
+}
+
+/* Elimină evidențierea generală pentru modificările de metrici */
+.result-item.diff-changed {
+    background-color: transparent;
+    border-left: none;
+}
+
+/* Adaugă stiluri specifice pentru metricile modificate */
+.metric-item.changed {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    background-color: #fff3cd;
+    border-left: 3px solid #ffc107;
+}
+
+/* Restul rezultatului rămâne neschimbat când doar metricile sunt modificate */
+.result-item-content {
+    background-color: transparent;
+    border-left: none;
+}
+
+/* Stiluri noi pentru compararea rezultatelor */
+.timeline-comparison {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 1rem;
+}
+
+.instance-timeline {
+    display: flex;
+    align-items: stretch;
+    gap: 1rem;
+    position: relative;
+}
+
+.timeline-header {
+    display: flex;
+    gap: 1rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.timeline-header-item {
+    flex: 1;
+    text-align: center;
+    padding: 0.5rem;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+}
+
+.result-group {
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    background: #fff;
+}
+
+.result-row {
+    display: flex;
+    align-items: stretch;
+    gap: 1rem;
+}
+
+.result-cell {
+    flex: 1;
+    position: relative;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 4px;
+}
+
+.result-arrow {
+    position: absolute;
+    top: 50%;
+    right: -1.5rem;
+    transform: translateY(-50%);
+    color: #6c757d;
+    font-size: 1.5rem;
+    z-index: 1;
+}
+
+.changes-section {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 2px dashed #dee2e6;
+}
+
+.changes-header {
+    font-weight: 500;
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+.added-results, .removed-results {
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.similarity-score {
+    display: none;
+}
+
+/* Stiluri pentru indicarea gradului de similaritate */
+.high-similarity {
+    border-left: 3px solid #28a745;
+}
+
+.medium-similarity {
+    border-left: 3px solid #ffc107;
+}
+
+.low-similarity {
+    border-left: 3px solid #dc3545;
+}
+
+/* Actualizează stilurile pentru compararea rezultatelor */
+.timeline-comparison {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 1rem;
+}
+
+.timeline-header {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 2;
+}
+
+/* Adaugă linii verticale */
+.timeline-columns {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    pointer-events: none;
+    z-index: 1;
+}
+
+.timeline-column {
+    position: relative;
+}
+
+.timeline-column::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    background-color: #dee2e6;
+    transform: translateX(-50%);
+}
+
+.result-group {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+    background: #fff;
+}
+
+.result-cell {
+    padding: 1rem;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    position: relative;
+}
+
+/* Actualizează stilul săgeților */
+.result-arrow {
+    position: absolute;
+    top: 50%;
+    right: -1rem;
+    transform: translateY(-50%);
+    color: #6c757d;
+    font-size: 1.5rem;
+    z-index: 3;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px white;
+}
+
+/* Stiluri pentru rezultate adăugate/eliminate */
+.changes-section {
+    position: relative;
+    z-index: 2;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 2px dashed #dee2e6;
+}
+
+/* Ajustare tracks timeline */
+.timeline-comparison {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 1rem 3rem;  /* Padding lateral crescut pentru a face loc liniilor verticale */
+}
+
+.timeline-tracks {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: space-around;
+    pointer-events: none;
+}
+
+.timeline-track {
+    width: 2px;
+    height: 100%;
+}
+
+.timeline-header {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 3rem;  /* Spațiu pentru săgeți */
+    background: #f8f9fa;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    z-index: 1;
+}
+
+.result-row {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 3rem;  /* Spațiu pentru săgeți */            
+    align-items: stretch;
+}
+
+.result-cell {
+    position: relative;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.result-arrow {
+    position: absolute;
+    top: 50%;
+    right: -2rem;
+    transform: translateY(-50%);
+    color: #6c757d;
+    font-size: 1.2rem;
+    z-index: 2;
+    width: 1rem;
+    height: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.timeline-comparison {
+    position: relative;
+    padding: 1rem;
+    width: 100%;
+    overflow-x: auto; 
+}
+
+.timeline-header {
+    display: flex;
+    gap: 2rem;
+    min-width: min-content;
+    margin-bottom: 1rem;
+    position: sticky;
+    left: 0;
+    background: #fff;
+    z-index: 2;
+}
+
+.timeline-header-item {
+    min-width: 300px;
+    flex-shrink: 0;
+    padding: 1rem;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+}
+
+.result-group {
+    margin-bottom: 1rem;
+}
+
+.result-row {
+    display: flex;
+    gap: 2rem;
+    min-width: min-content;
+}
+
+.result-cell {
+    position: relative;
+    min-width: 300px;
+    width: 300px;
+    flex-shrink: 0;
+    padding: 1rem;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+.result-arrow {
+    position: absolute;
+    top: 50%;
+    right: -1.5rem;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+/* Stilizează scrollbar-ul pentru o vizibilitate mai bună */
+.timeline-comparison::-webkit-scrollbar {
+    height: 8px;
+}
+
+.timeline-comparison::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.timeline-comparison::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.timeline-comparison::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Ajustare tracks timeline */
+.timeline-tracks {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    gap: 2rem;
+    pointer-events: none;
+    min-width: min-content;
+    padding: 0 1rem;
+}
+
+.timeline-track {
+    min-width: 300px;
+    width: 300px;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.timeline-track::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    background-color: #dee2e6;
+    transform: translateX(-50%);
+}
+
+/* Actualizează stilul metrics-similarity pentru a păstra aspectul similarity-score */
+.metrics-similarity {
+    position: absolute;
+    top: -0.5rem;
+    right: -0.5rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    background: #e9ecef;
+    color: #6c757d;
+}
+
+/* Înlocuiește stilul existent metrics-similarity cu acest stil nou */
+.metrics-similarity {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    z-index: 10;
+}
+
+.similarity-badge {
+    padding: 0.5rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    white-space: nowrap;
+    border: 2px solid #fff;
+}
+
+.similarity-badge.perfect {
+    background-color: #198754;  /* Culoare de succes Bootstrap */
+    color: white;
+}
+
+.similarity-badge.high {
+    background-color: #ffc107;  /* Culoare de avertizare Bootstrap */
+    color: #000;
+}
+
+.similarity-badge.medium {
+    background-color: #fd7e14;  /* Culoare portocalie Bootstrap */
+    color: white;
+}
+
+.similarity-badge.low {
+    background-color: #dc3545;  /* Culoare de pericol Bootstrap */
+    color: white;
+}
+
+/* Adaugă poziție relativă la result-cell pentru poziționarea corectă a badge-ului */
+.result-cell {
+    position: relative;
+    /* ...existing result-cell styles... */
+}
+
+/* Actualizează containerul de metrici și stilurile badge-ului de similaritate */
+.metrics-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-end;
+}
+
+.metrics {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.metrics-similarity {
+    margin-bottom: 0.25rem;  /* Adaugă spațiu între badge și metrici */
+    position: relative;      /* Schimbă din absolut în relativ */
+    right: 0;               /* Elimină poziționarea absolută */
+    top: 0;                 /* Elimină poziționarea absolută */
+}
+
+.similarity-badge {
+    padding: 0.5rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    white-space: nowrap;
+    border: 2px solid #fff;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Actualizează poziția și dimensiunea metrics-similarity */
+.metrics-similarity {
+    position: absolute;
+    top: -8px;  /* Redus de la -10px */
+    right: -8px; /* Redus de la -10px */
+    z-index: 10;
+}
+
+/* Actualizează dimensiunea badge-ului de similaritate */
+.similarity-badge {
+    padding: 0.35rem 0.5rem; /* Redus de la 0.5rem 0.75rem */
+    border-radius: 15px;     /* Redus de la 20px */
+    font-size: 0.75rem;      /* Redus de la 0.85rem */
+    font-weight: 500;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Umbră redusă */
+    white-space: nowrap;
+    border: 1px solid #fff;  /* Lățime redusă a bordurii */
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;           /* Redus de la 0.5rem */
+}
+
+/* Face iconița puțin mai mică */
+.similarity-badge i {
+    font-size: 0.8em;       /* Adăugat pentru a face iconița proporțională */
+}
+
+/* Actualizează poziționarea și stilizarea metrics-similarity */
+.metrics-similarity {
+    position: relative;
+    display: inline-block;
+    margin-left: 0.5rem;
+    z-index: 1;
+}
+
+.similarity-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    white-space: nowrap;
+    border: 1px solid #fff;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+/* Actualizează badge-ul perfect pentru a se potrivi cu celelalte badge-uri */
+.similarity-badge.perfect {
+    background-color: #198754;
+    color: white;
+    margin-bottom: 0;
+    position: static;
+}
+
+/* Face iconițele de dimensiuni consistente */
+.similarity-badge i {
+    font-size: 0.7em;
+    position: relative;
+    top: 0;
+}
+
+/* Actualizează structura result-item */
+.result-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 150px; /* Adaugă înălțime minimă pentru a acomoda conținutul */
+}
+
+/* Actualizează poziționarea containerului de metrici */
+.metrics-container {
+    margin-top: auto; /* Împinge metricile în partea de jos */
+    padding-top: 1rem;
+    border-top: 1px solid #dee2e6;
+}
+
+/* Asigură că metricile rămân în partea de jos */
+.metrics {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+/* Păstrează badge-ul de similaritate în partea de sus */
+.metrics-similarity {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 2;
+}
+
+/* Ajustează spațierea conținutului */
+.result-content {
+    flex: 1;
+    margin-bottom: 1rem;
+}
+
+/* Actualizează poziționarea metrics-similarity */
+.metrics-similarity {
+    position: absolute;
+    top: -10px;  /* Mută-l mai sus */
+    right: -10px;
+    z-index: 10;
+}
+
+/* Asigură că result-content are spațiere corespunzătoare pentru badge */
+.result-content {
+    flex: 1;
+    position: relative;  /* Asigură contextul de poziționare corespunzător */
+    padding-top: 10px;  /* Adaugă spațiu în partea de sus pentru badge */
+    margin-bottom: 1rem;
+}
+
+/* Actualizează structura result-item */
+.result-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 150px;
+    padding-top: 15px;  /* Adaugă padding pentru a acomoda badge-ul */
+}
+
+/* ...existing styles... */
+
+/* Actualizează result-content pentru a adăuga mai mult padding pentru badge */
+.result-content {
+    flex: 1;
+    position: relative;
+    padding-top: 25px;  /* Padding crescut pentru a face loc badge-ului */
+    margin-bottom: 1rem;
+    padding-right: 1rem;
+}
+
+/* Actualizează poziționarea metrics-similarity */
+.metrics-similarity {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    z-index: 10;
+}
+
+/* Actualizează result-item pentru a oferi spațiu pentru badge */
+.result-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 150px;
+    padding: 1rem;
+    margin-top: 12px;  /* Adaugă margine pentru a preveni suprapunerea badge-ului cu elementele de deasupra */
+}
+
+/* Asigură că textul conținutului rămâne sub badge */
+.result-content h6,
+.result-content p {
+    position: relative;
+    z-index: 1;
+}
+
+/* Actualizează stilurile săgeții de rezultate */
+.result-arrow {
+    position: absolute;
+    top: 50%;
+    right: -1.5rem;
+    transform: translateY(-50%);
+    color: #6c757d;
+    font-size: 1.2rem;
+    z-index: 2;
+    width: 1rem;
+    height: 1rem;
+    display: none; /* Ascunde implicit */
+    align-items: center;
+    justify-content: center;
+}
+
+.result-arrow.show {
+    display: flex; /* Afișează doar când există similaritate */
+}
+
+/* Adaugă separator vizual când nu există săgeată */
+.result-cell:not(:last-child)::after {
+    display: none;
+}
+
+.result-cell:not(:last-child).no-similarity::after {
+    display: none;
+}

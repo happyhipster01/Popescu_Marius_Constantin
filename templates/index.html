@@ -1,0 +1,2074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Metadata și resurse externe -->
+    <meta charset="UTF-8">
+    <meta name="viewport"="width=device-width, initial-scale=1.0">
+    <title>OSINT Search Tool</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Container principal -->
+    <div class="container-fluid">
+        <!-- Updated title section with icon -->
+        <div class="title-container">
+            <h1><i class="bi bi-search-heart"></i>OSINT Search Tool</h1>
+        </div>
+
+        <!-- Main navigation tabs with added/updated icons -->
+        <ul class="nav nav-tabs mb-4" id="searchTabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="google-tab" data-bs-toggle="tab" href="#google" role="tab">
+                    <i class="bi bi-google"></i> Google Dorks
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="twitter-tab" data-bs-toggle="tab" href="#twitter" role="tab">
+                    <i class="bi bi-twitter"></i> Twitter
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="history-tab" data-bs-toggle="tab" href="#history" role="tab">
+                    <i class="bi bi-clock-history"></i> Search History
+                </a>
+            </li>
+        </ul>
+
+        <!-- Tab content -->
+        <div class="tab-content" id="searchTabContent">
+            <!-- Google Search Tab -->
+            <div class="tab-pane fade show active" id="google" role="tabpanel">
+                <div class="search-form mb-4">
+                    <form action="{{ url_for('cauta_toti_sursele') }}" method="post" onsubmit="actualizarePrevizualizareInterogare()">
+                        <div id="operators">
+                            <!-- Aici vor fi afisati toti operatorii -->             
+                        </div>
+                        <button type="button" class="btn btn-secondary mb-3 btn-add-operator" onclick="adaugaOperator()">
+                            <i class="bi bi-plus-circle"></i> Adaugă operator
+                        </button>
+                        <br>
+                        <label for="keyword" class="form-label">Cuvânt cheie general:</label>
+                        <input type="text" id="keyword" name="keyword" class="form-control mb-3" oninput="actualizarePrevizualizareInterogare()">
+                        <input type="hidden" id="operators_count" name="operators_count" value="1">
+                        <label for="query_preview" class="form-label">Previzualizare interogare:</label>
+                        <input type="text" id="query_preview" class="form-control mb-3" readonly>
+                        <input type="hidden" id="query" name="query">
+                        <button type="submit" class="btn btn-primary">Caută</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Twitter Search Tab -->
+            <div class="tab-pane fade" id="twitter" role="tabpanel">
+                <div class="search-form mb-4">
+                    <form action="{{ url_for('search_twitter') }}" method="post" id="twitterSearchForm">
+                        <!-- Basic Search Section with icon -->
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h5><i class="bi bi-search"></i> Basic Search</h5>
+                            </div>
+                            <div class="card-body">
+                                <!-- Keywords -->
+                                <div class="mb-3">
+                                    <label class="form-label">Keywords:</label>
+                                    <div id="keywordsList">
+                                        <div class="input-group mb-2">
+                                            <input type="text" class="form-control" name="keywords[]" placeholder="Enter keyword">
+                                            <select class="form-select" name="keyword_types[]" style="max-width: 200px;">
+                                                <option value="normal">Regular search</option>
+                                                <option value="exact">Exact phrase</option>
+                                                <option value="exclude">Exclude this</option>
+                                            </select>
+                                            <button type="button" class="btn btn-danger" onclick="removeKeyword(this)">Remove</button>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-secondary btn-sm" onclick="addKeyword()">Add Keyword</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- User Filters Section with icon -->
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h5><i class="bi bi-person-filter"></i> User Filters</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label class="form-label">From User:</label>
+                                            <input type="text" class="form-control" name="from_user" placeholder="username">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label class="form-label">To User:</label>
+                                            <input type="text" class="form-control" name="to_user" placeholder="username">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label class="form-label">Mention User:</label>
+                                            <input type="text" class="form-control" name="mention_user" placeholder="username">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Interaction Filters with icon -->
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h5><i class="bi bi-chat-square-heart"></i> Interaction Filters</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label class="form-label">Min Likes:</label>
+                                        <input type="number" class="form-control" name="min_faves" min="0">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Min Retweets:</label>
+                                        <input type="number" class="form-control" name="min_retweets" min="0">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Min Replies:</label>
+                                        <input type="number" class="form-control" name="min_replies" min="0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Content Filters with icon -->
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h5><i class="bi bi-funnel"></i> Content Filters</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Content Type:</label>
+                                        <select class="form-select" name="filter">
+                                            <option value="">Any content</option>
+                                            <option value="links">Has links</option>
+                                            <option value="images">Has images</option>
+                                            <option value="videos">Has videos</option>
+                                            <option value="media">Has media</option>
+                                            <option value="-links">No links</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Language:</label>
+                                        <select class="form-select" name="lang">
+                                            <option value="">Any</option>
+                                            <option value="ro">Romanian</option>
+                                            <option value="en">English</option>
+                                            <option value="es">Spanish</option>
+                                            <option value="fr">French</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="exclude_replies" name="exclude_replies" value="true">
+                                            <label class="form-check-label" for="exclude_replies">Exclude replies</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="exclude_retweets" name="exclude_retweets" value="true">
+                                            <label class="form-check-label" for="exclude_retweets">Exclude retweets</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Date Range with icon -->
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h5><i class="bi bi-calendar-range"></i> Date Range</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Since:</label>
+                                        <input type="date" class="form-control" name="since">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Until:</label>
+                                        <input type="date" class="form-control" name="until">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary mb-4">Search Twitter</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- History Tab -->
+            <div class="tab-pane fade" id="history" role="tabpanel">
+                <!-- Move history content from modal here -->
+                <div class="card">
+                    <div class="card-body">
+                        <ul class="nav nav-tabs mb-3 history-filter-tabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#allHistory">
+                                    <i class="bi bi-collection"></i> All
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#googleHistory">
+                                    <i class="bi bi-google"></i> Google
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#twitterHistory">
+                                    <i class="bi bi-twitter"></i> Twitter
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="historyTabContent">
+                            <div class="tab-pane fade show active" id="allHistory">
+                                <div class="history-list accordion" id="allHistoryAccordion"></div>
+                            </div>
+                            <div class="tab-pane fade" id="googleHistory">
+                                <div class="history-list accordion" id="googleHistoryAccordion"></div>
+                            </div>
+                            <div class="tab-pane fade" id="twitterHistory">
+                                <div class="history-list accordion" id="twitterHistoryAccordion"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section - Added below the tab content -->
+        <div class="results-section mt-4">
+            <div id="googleResults" class="results-container mb-4" {% if not results %}style="display: none;"{% endif %}>
+                {% if results %}
+                    {% for result in results %}
+                    <div class="card result-card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ result.title }}</h5>
+                            <p class="card-text">{{ result.description }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">{{ result.link }}</small>
+                                <a href="{{ result.link }}" class="btn btn-sm btn-primary" target="_blank">Visit</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <!-- Twitter Results -->
+            <div id="twitterResults" class="results-container" {% if not twitter_results %}style="display: none;"{% endif %}>
+                {% if twitter_results %}
+                    {% for tweet in twitter_results %}
+                    <div class="card result-card">
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-2 text-muted">{{ tweet.username }}</h6>
+                            <p class="card-text">{{ tweet.content }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="metrics">
+                                    <small class="text-muted">
+                                        <span class="me-2">🔄 {{ tweet.metrics.reposts }}</span>
+                                        <span class="me-2">💬 {{ tweet.metrics.replies }}</span>
+                                        <span>❤️ {{ tweet.metrics.likes }}</span>
+                                    </small>
+                                </div>
+                                <a href="{{ tweet.link }}" class="btn btn-sm btn-primary" target="_blank">View Tweet</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div id="comparisonContainer" style="display:none; position:relative;">
+        <div class="vertical-line" style="
+            position:absolute;
+            left:50%;
+            top:0;
+            bottom:0;
+            width:2px;
+            background-color:#333;">
+        </div>
+        <!-- ...existing code... -->
+    </div>
+
+    <!-- Add this new modal at the end of the body -->
+    <div class="modal fade" id="scheduledSearchesModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Scheduled Searches</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Source</th>
+                                    <th>Query</th>
+                                    <th>Interval</th>
+                                    <th>Next Run</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="scheduledSearchesTable">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripturi pentru funcționalitate -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Configurări și variabile globale
+        let operatorCounter = 0; // Inițializează contorul de operatori
+
+        // Funcții pentru operatori de căutare
+        function adaugaOperator(parentPath = '', operatorValue = '') {
+            // Selectează containerul unde va fi adăugat operatorul
+            const operatorsContainer = parentPath ? document.getElementById(`nested_operators_list_${parentPath}`) : document.getElementById('operators');
+            // Crește contorul pentru a asigura unicitatea ID-urilor
+            const index = operatorCounter++;
+            // Construiește calea curentă bazată pe operatorii părinte
+            const currentPath = parentPath ? `${parentPath}_${index}` : `${index}`;
+
+            // Creează un nou grup de operatori
+            const newOperatorGroup = document.createElement('div');
+            newOperatorGroup.className = 'row mb-3 operator-group'; // Aplică clasele CSS
+            newOperatorGroup.id = `operator_group_${currentPath}`; // Setează ID-ul pentru grup
+            newOperatorGroup.innerHTML = `
+                <div class="col-md-4 d-flex flex-column">
+                    <label for="operator_${currentPath}" class="form-label">Operator:</label>
+                    <select id="operator_${currentPath}" name="operator_${currentPath}" class="form-select">
+                        <!-- Listează toate opțiunile disponibile pentru operatori -->
+                        <option value="site">site:</option>
+                        <option value="inurl">inurl:</option>
+                        <option value="intitle">intitle:</option>
+                        <option value="intext">intext:</option>
+                        <option value="filetype">filetype:</option>
+                        <option value="ext">ext:</option>
+                        <option value="info">info:</option>
+                        <option value="cache">cache:</option>
+                        <option value="related">related:</option>
+                        <option value="define">define:</option>
+                        <option value="allintext">allintext:</option>
+                        <option value="allintitle">allintitle:</option>
+                        <option value="allinurl">allinurl:</option>
+                        <option value="inanchor">inanchor:</option>
+                        <option value="link">link:</option>
+                        <option value="links">links:</option>
+                        <option value="@">@</option>
+                        <option value="after">after:</option>
+                        <option value="before">before:</option>
+                        <option value="numrange">numrange:</option>
+                        <option value="source">source:</option>
+                        <option value="location">location:</option>
+                        <option value="phonebook">phonebook:</option>
+                        <option value="safesearch">safesearch:</option>
+                        <option value="weather">weather:</option>
+                        <option value="stock">stock:</option>
+                        <option value="quotes">" "</option>
+                        <option value="or">OR</option>
+                        <option value="and">AND</option>
+                        <option value="pipe">|</option>
+                        <option value="parentheses">( )</option>
+                        <option value="hyphen">-</option>
+                        <option value="wildcard">*</></option>
+                        <option value="range">#..#</option>   
+                    </select>
+                </div>
+                <div class="col-md-4" id="text_container_${currentPath}">
+                    <label for="text_${currentPath}" class="form-label">Text:</label>
+                    <input type="text" id="text_${currentPath}" name="text_${currentPath}" class="form-control" oninput="actualizarePrevizualizareInterogare()">
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="button" class="btn btn-secondary me-2 mb-2" id="add_nested_button_${currentPath}" style="display: none;" onclick="adaugaOperator('${currentPath}')">Adaugă operator în paranteze</button>
+                    <button type="button" class="btn btn-danger" onclick="stergeOperator('${currentPath}')">Șterge</button>
+                </div>
+                <!-- Mută descrierea în afara coloanelor pentru a ocupa întreaga lățime -->
+                <div class="col-12">
+                    <small id="operator_description_${currentPath}" class="form-text text-muted operator-description"></small>
+                </div>
+                <div id="nested_operators_list_${currentPath}" class="mt-2" style="display: none;"></div>
+            `;
+            // Adaugă noul grup de operatori în containerul selectat
+            operatorsContainer.appendChild(newOperatorGroup);
+
+            // Selectează elementul select al operatorului nou creat
+            const operatorSelect = document.getElementById(`operator_${currentPath}`);
+            // Dacă s-a furnizat o valoare implicită pentru operator, o setează
+            if (operatorValue) {
+                operatorSelect.value = operatorValue;
+            }
+
+            // Inițializează descrierea operatorului și atașează event listener-ul
+            actualizareDescriereOperator(currentPath);
+            operatorSelect.addEventListener('change', function() {
+                // Actualizează afișarea câmpului de text în funcție de operatorul selectat
+                comutaInputText(currentPath);
+                // Actualizează descrierea operatorului
+                actualizareDescriereOperator(currentPath);
+            });
+            // Actualizează previzualizarea interogării
+            actualizarePrevizualizareInterogare();
+        }
+
+        function stergeOperator(path) {
+            // Selectează grupul de operatori care trebuie eliminat
+            const operatorGroup = document.getElementById(`operator_group_${path}`);
+            // Elimină grupul de operatori din DOM
+            operatorGroup.remove();
+            // Actualizează previzualizarea interogării după eliminarea operatorului
+            actualizarePrevizualizareInterogare();
+        }
+
+        function comutaInputText(path) {
+            // Selectează elementul select al operatorului specific
+            const operatorElem = document.getElementById(`operator_${path}`);
+            // Obține valoarea operatorului selectat
+            const operator = operatorElem.value;
+            // Selectează containerul pentru câmpul de text
+            const textContainer = document.getElementById(`text_container_${path}`);
+            // Selectează lista de operatori înrudiți, dacă există
+            const nestedOperatorsList = document.getElementById(`nested_operators_list_${path}`);
+            // Selectează butonul pentru adăugarea operatorilor în paranteze
+            const addNestedButton = document.getElementById(`add_nested_button_${path}`);
+
+            if (operator === 'or' || operator === 'pipe' || operator === 'and') {
+                // Dacă operatorul este 'or', 'pipe' sau 'and', ascunde câmpul de text și lista operatorilor înrudiți
+                textContainer.style.display = 'none';
+                nestedOperatorsList.style.display = 'none'; // Ascunde lista de operatori înrudiți
+                addNestedButton.style.display = 'none'; // Ascunde butonul de adăugare a operatorilor în paranteze
+
+                // Determină calea părintelui pentru a adăuga noul operator la același nivel
+                const parentPath = path.includes('_') ? path.split('_').slice(0, -1).join('_') : '';
+                // Adaugă operatorul la același nivel ierarhic
+                adaugaOperator(parentPath); // Adaugă operator la același nivel ierarhic
+            } else if (operator === 'parentheses') {
+                // Dacă operatorul este 'parentheses', ascunde câmpul de text și afișează lista de operatori înrudiți
+                textContainer.style.display = 'none';
+                nestedOperatorsList.style.display = 'block'; // Afișează lista de operatori înrudiți
+                addNestedButton.style.display = 'block'; // Afișează butonul de adăugare a operatorilor în paranteze
+
+                // Adaugă un grup de operatori dacă lista este goală
+                if (!nestedOperatorsList.hasChildNodes()) {
+                    adaugaOperator(path);
+                }
+            } else if (operator === 'wildcard') {
+                // Înlocuiește câmpul de text simplu cu două câmpuri de text separate de "*"
+                textContainer.innerHTML = `
+                    <div class="wildcard-text-container">
+                        <input type="text" id="text1_${path}" name="text1_${path}" class="form-control d-inline" oninput="actualizarePrevizualizareInterogare()" style="width: 45%;">
+                        <span> * </span>
+                        <input type="text" id="text2_${path}" name="text2_${path}" class="form-control d-inline" oninput="actualizarePrevizualizareInterogare()" style="width: 45%;">
+                    </div>
+                `;
+                textContainer.classList.add('wildcard-text-container');
+            } else if (operator === 'range') {
+                // Înlocuiește câmpul de text simplu cu două câmpuri de text separate de ".."
+                textContainer.innerHTML = `
+                    <div class="range-text-container">
+                        <input type="text" id="range1_${path}" name="range1_${path}" class="form-control d-inline" oninput="actualizarePrevizualizareInterogare()" style="width: 45%;">
+                        <span class="separator">..</span>
+                        <input type="text" id="range2_${path}" name="range2_${path}" class="form-control d-inline" oninput="actualizarePrevizualizareInterogare()" style="width: 45%;">
+                    </div>
+                `;
+                textContainer.classList.add('range-text-container');
+            } else {
+                // Pentru alți operatori, afișează câmpul de text și ascunde lista de operatori înrudiți
+                textContainer.style.display = 'block';
+                nestedOperatorsList.style.display = 'none';
+                addNestedButton.style.display = 'none';
+
+                // Restore single text input if operator is not 'wildcard'
+                textContainer.innerHTML = `
+                    <label for="text_${path}" class="form-label">Text:</label>
+                    <input type="text" id="text_${path}" name="text_${path}" class="form-control" oninput="actualizarePrevizualizareInterogare()">
+                `;
+                textContainer.classList.remove('wildcard-text-container', 'range-text-container');
+
+                // Elimină orice operatori înrudiți care nu mai sunt necesari
+                nestedOperatorsList.innerHTML = '';
+                delete nestedOperatorsList.dataset.initialized;
+            }
+            // Actualizează descrierea operatorului după comutare
+            actualizareDescriereOperator(path);
+            // Actualizează previzualizarea interogării după comutare
+            actualizarePrevizualizareInterogare();
+        }
+
+        function actualizareDescriereOperator(path) {
+            // Obține valoarea operatorului selectat
+            const operator = document.getElementById(`operator_${path}`).value;
+            // Selectează elementul unde va fi afișată descrierea operatorului
+            const description = document.getElementById(`operator_description_${path}`);
+            // Definirea descrierilor pentru fiecare operator
+            const descriptions = {
+                "site": "Efectuați căutarea pe un anumit site web. Sintaxă: site:<domeniu>. Exemplu: site:google.com",
+                "inurl": "Căutați linkuri care conțin un cuvânt cheie. Sintaxă: inurl:<text>. Exemplu: inurl:vulnerabilitate",
+                "intitle": "Căutați titluri care conțin un cuvânt cheie. Sintaxă: intitle:<text>. Exemplu: intitle:vulnerabilitate",
+                "intext": "Căutați pagini care conțin un cuvânt cheie în text. Sintaxă: intext:<text>. Exemplu: intext:vulnerabilitate",
+                "filetype": "Efectuați căutarea după un anumit tip de fișier. Sintaxă: filetype:<extensie>. Exemplu: filetype:pdf",
+                "ext": "Caută extensii de fișiere specifice.",
+                "info": "Căutați informații despre un site web. Sintaxă: info:<domeniu>. Exemplu: info:google.com",
+                "cache": "Căutați în versiunea stocată în cache a site-ului web dat. Sintaxă: cache:<domeniu>. Exemplu: cache:google.com",
+                "related": "Căutați site-uri web similare. Sintaxă: related:<domeniu>. Exemplu: related:google.com",
+                "define": "Căutați definiția unui text. Sintaxă: define:<text>. Exemplu: define:computer",
+                "allintext": "Căutați pagini care conțin mai multe cuvinte cheie în text. Sintaxă: allintext:<text1 text2>. Exemplu: allintext:vulnerabilitate securitate",
+                "allintitle": "Căutați titluri care conțin mai multe cuvinte cheie. Sintaxă: allintitle:<text1 text2>. Exemplu: allintitle:vulnerabilitate securitate",
+                "allinurl": "Căutați pagini care conțin mai multe cuvinte cheie în text. Sintaxă: allintext:<text1 text2>. Exemplu: allintext:vulnerabilitate securitate",
+                "inanchor": "Caută pagini cuvinte specifice în textul ancorii.",
+                "link": "Căutați site-uri ale căror linkuri conțin cuvântul cheie dat. Sintaxă: link:<text>. Exemplu: link:security",
+                "links": "Căutați pagini care conțin linkuri către un anumit site. Sintaxă: links:<domeniu>. Exemplu: links:google.com",
+                "@": "Efectuați căutarea pe o rețea socială. Sintaxă: @<nume_rețea>. Exemplu: @facebook georgescu ion",
+                "after": "Căutați pagini indexate după o anumită dată. Sintaxă: after:<data>. Exemplu: after:2021-01-01",
+                "before": "Căutați pagini indexate înainte de o anumită dată. Sintaxă: before:<data>. Exemplu: before:2021-01-01",
+                "numrange": "Caută un interval de numere.",
+                "source": "Efectuați căutarea pe Google News. Sintaxă: source:<sursă>. Exemplu: source:bbc",
+                "location": "Căutați informații despre o locație. Sintaxă: location:<locatie>. Exemplu: location:romania",
+                "phonebook": "Căutați numere de telefon asociate cu numele dat. Sintaxă: phonebook:<nume>. Exemplu: phonebook:georgescu ion",
+                "safesearch": "Activează filtrarea SafeSearch.",
+                "weather": "Căutați informații despre vreme. Sintaxă: weather:<locatie>. Exemplu: weather:iasi",
+                "stock": "Căutați informații despre o acțiune la bursă. Sintaxă: stock:<simbol>. Exemplu: stock:goog",
+                "quotes": "Căutați o expresie exactă. Sintaxă: \"text\". Exemplu: \"vulnerabilitate de securitate\"",
+                "or": "Căutați pagini care conțin unul dintre cuvintele cheie. Sintaxă: text1 OR text2. Exemplu: vulnerabilitate OR securitate",
+                "and": "Căutați pagini care conțin unul dintre cuvintele cheie. Sintaxă: text1 AND text2. Exemplu: vulnerabilitate AND securitate",
+                "pipe": "Căutați pagini care conțin unul dintre cuvintele cheie. Sintaxă: text1 | text2. Exemplu: vulnerabilitate | securitate",
+                "parentheses": "Grupați mai mulți termeni sau operatori. Permite expresii avansate. Exemplu: inurl:(html OR php)",
+                "hyphen": "Excludeți un cuvânt cheie. Sintaxă: -text. Exemplu: -securitate",
+                "wildcard": "Permite căutarea oricărui cuvânt în locul asteriscului. Sintaxă: <text> * <text>. Exemplu: Cum să * un site web",
+                "range": "Căutați pagini care conțin un interval de numere. Sintaxă: număr1..număr2. Exemplu: 2000..2021"
+            };
+            // Afișează descrierea corespunzătoare operatorului selectat sau o șir gol dacă nu există
+            description.textContent = descriptions[operator] || "";
+        }
+
+        function actualizarePrevizualizareInterogare() {
+            // Obține valoarea cuvântului cheie introdus de utilizator
+            const keyword = document.getElementById('keyword').value;
+            // Obține operatorii introduși de utilizator
+            const operators = getOperanzi('');
+            // Construiște interogarea de căutare utilizând cuvântul cheie și operatorii
+            const query = construireInterogareCautare(keyword, operators);
+            // Setează valoarea interogării în câmpurile ascunse pentru procesare pe server
+            document.getElementById('query').value = query;
+            document.getElementById('query_preview').value = query; // Afișează interogarea în câmpul de previzualizare
+        }
+
+        function getOperanzi(parentPath) {
+            // Inițializează o listă pentru a stoca operatorii din grupurile curente
+            const operators = [];
+            // Selectează elementul părinte care conține grupurile de operatori
+            const parentElement = parentPath ? document.getElementById(`nested_operators_list_${parentPath}`) : document.getElementById('operators');
+            // Selectează toate grupurile de operatori directe din elementul părinte
+            const operatorGroups = parentElement.querySelectorAll(`:scope > .operator-group`);
+
+            // Iterează prin fiecare grup de operatori
+            operatorGroups.forEach(group => {
+                // Extrage calea operatorului din ID-ul grupului
+                const path = group.id.replace('operator_group_', '');
+                // Obține valoarea operatorului selectat
+                const operator = document.getElementById(`operator_${path}`).value;
+                // Obține valoarea textului asociat operatorului
+                const textElem = document.getElementById(`text_${path}`);
+                const text = textElem ? textElem.value : '';
+                // Selectează lista de operatori înrudiți, dacă există
+                const nestedOperatorsList = document.getElementById(`nested_operators_list_${path}`);
+                let nestedOperators = [];
+
+                // Dacă există operatori înrudiți, obține-i recursiv
+                if (nestedOperatorsList && nestedOperatorsList.children.length > 0) {
+                    nestedOperators = getOperanzi(path);
+                }
+
+                if (operator === 'wildcard') {
+                    // Obține ambele texte pentru wildcard
+                    const text1 = document.getElementById(`text1_${path}`).value;
+                    const text2 = document.getElementById(`text2_${path}`).value;
+                    operators.push({
+                        operator: operator,
+                        text: { text1: text1, text2: text2 }
+                    });
+                } else if (operator === 'range') {
+                    // Obține ambele texte pentru range
+                    const range1 = document.getElementById(`range1_${path}`).value;
+                    const range2 = document.getElementById(`range2_${path}`).value;
+                    operators.push({
+                        operator: operator,
+                        text: { range1: range1, range2: range2 }
+                    });
+                } else {
+                    // Adaugă operatorul și textul său (sau operatorii înrudiți) în lista de operatori
+                    operators.push({
+                        operator: operator,
+                        text: nestedOperators.length > 0 ? nestedOperators : text
+                    });
+                }
+            });
+            // Returnează lista completă de operatori
+            return operators;
+        }
+
+        function construireInterogareCautare(keyword, operators) {
+            // Inițializează interogarea cu cuvântul cheie principal
+            let query = keyword;
+            // Iterează prin fiecare operator și îl adaugă la interogare în funcție de tipul său
+            for (const op of operators) {
+                if (op.operator === 'quotes') {
+                    // Adaugă un text exact între ghilimele
+                    query += ` "${op.text}"`;
+                } 
+                // Gestionează operatorii 'or', 'pipe' și 'AND' fără a adăuga ':'
+                else if (op.operator === 'or') {
+                    query += ' OR';
+                }
+                else if (op.operator === 'pipe') {
+                    query += ' |';
+                }
+                else if (op.operator === 'and') {
+                    query += ' AND';
+                }
+                else if (op.operator === 'parentheses') {
+                    // Construiește o sub-interogare pentru operatorii din paranteze
+                    const nestedQuery = construireInterogareCautare('', op.text);
+                    query += ` (${nestedQuery})`;
+                } else if (op.operator === 'hyphen') {
+                    // Adaugă un semn minus pentru excluziune
+                    query += ` -${op.text}`;
+                } else if (op.operator === 'wildcard') {
+                    // Verifică dacă sunt două texte pentru wildcard
+                    const text1 = op.text.text1 || '';
+                    const text2 = op.text.text2 || '';
+                    query += ` ${text1} * ${text2}`;
+                } else if (op.operator === 'range') {
+                    // Adaugă intervalul de numere fără spații
+                    const rangeQuery = `${op.text.range1}..${op.text.range2}`;
+                    query += ` ${rangeQuery}`;
+                } else if (op.operator) {
+                    // Adaugă operatorul și textul său specific
+                    query += ` ${op.operator}:${op.text}`;
+                } else {
+                    // Adaugă doar textul dacă nu există operator
+                    query += ` ${op.text}`;
+                }
+            }
+            // Elimină spațiile suplimentare la începutul și sfârșitul interogării
+            return query.trim();
+        }
+
+        // Inițializează un grup de operatori la încărcarea paginii
+        document.addEventListener('DOMContentLoaded', () => {
+            adaugaOperator(); // Adaugă primul grup de operatori
+
+            // Gestionează trimiterile AJAX pentru salvarea rezultatelor
+            document.querySelectorAll('.save-result-form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    // Previne comportamentul implicit al formularului (reîncărcarea paginii)
+                    e.preventDefault();
+                    // Obține datele trimise în formular
+                    const formData = new FormData(this);
+                    // Selectează elementul unde va fi afișat mesajul de salvare
+                    const messageSpan = this.querySelector('.save-message');
+
+                    // Trimite o cerere AJAX către server pentru a salva rezultatul
+                    fetch(this.action, {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json()) // Parsează răspunsul JSON
+                    .then(data => {
+                        if(data.status === 'success') {
+                            // Dacă salvarea a fost reușită, afișează mesajul de succes
+                            messageSpan.textContent = data.message;
+                            messageSpan.style.color = 'green';
+                        } else {
+                            // Dacă a apărut o eroare, afișează mesajul de eroare
+                            messageSpan.textContent = data.message;
+                            messageSpan.style.color = 'red';
+                        }
+                    })
+                    .catch(error => {
+                        // În caz de eroare în cererea AJAX, afișează un mesaj de eroare
+                        messageSpan.textContent = 'Eroare la salvare';
+                        messageSpan.style.color = 'red';
+                    });
+                });
+            });
+        });
+
+        function prepareTwitterSearch() {
+            // Copy the keyword value to the hidden query field
+            document.getElementById('twitter_query').value = document.getElementById('twitter_keyword').value;
+        }
+
+        // New functions for history management
+        function toggleHistory() {
+            const drawer = document.getElementById('historyDrawer');
+            drawer.classList.toggle('open');
+        }
+
+        function loadHistory() {
+            fetch('/get_history')
+                .then(response => response.json())
+                .then(data => {
+                    updateHistoryLists(data);
+                })
+                .catch(error => console.error('Error loading history:', error));
+        }
+
+        function updateHistoryLists(historyData) {
+            const allHistory = document.querySelector('#allHistory .history-list');
+            const googleHistory = document.querySelector('#googleHistory .history-list');
+            const twitterHistory = document.querySelector('#twitterHistory .history-list');
+            
+            // Clear existing content
+            allHistory.innerHTML = '';
+            googleHistory.innerHTML = '';
+            twitterHistory.innerHTML = '';
+            
+            historyData.forEach(item => {
+                const historyItem = createHistoryItem(item);
+                
+                // Add to all history
+                allHistory.appendChild(historyItem.cloneNode(true));
+                
+                // Add to source-specific history
+                if (item.source === 'google') {
+                    googleHistory.appendChild(historyItem.cloneNode(true));
+                } else {
+                    twitterHistory.appendChild(historyItem);
+                }
+            });
+        }
+
+        function createHistoryItem(item) {
+            const div = document.createElement('div');
+            div.className = 'history-item';
+            div.innerHTML = `
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="history-meta">
+                        <span class="history-badge badge-${item.source}">${item.source}</span>
+                        <span class="ms-2">${item.date} ${item.time}</span>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary" 
+                            onclick="rerunSearch('${item.source}', '${item.id}')"
+                            title="Rerun this search">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                </div>
+                <div class="history-query">${item.query}</div>
+                <div class="history-stats">
+                    <span><i class="bi bi-search"></i> ${item.result_count} results</span>
+                    ${item.had_changes ? '<span class="text-warning"><i class="bi bi-exclamation-triangle"></i> Changes detected</span>' : ''}
+                </div>
+            `;
+            return div;
+        }
+
+        // Load history when history tab is shown
+        document.querySelector('#history-tab').addEventListener('shown.bs.tab', function (e) {
+            loadHistory();
+        });
+
+        // Add this to your existing JavaScript
+        function showResults(type) {
+            // Hide all result containers
+            document.querySelectorAll('.results-container').forEach(container => {
+                container.style.display = 'none';
+            });
+            
+            // Show the selected result container
+            const resultContainer = document.getElementById(type + 'Results');
+            if (resultContainer) {
+                resultContainer.style.display = 'block';
+            }
+        }
+
+        // Update tab change handling
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('[data-bs-toggle="tab"]');
+            tabs.forEach(tab => {
+                tab.addEventListener('shown.bs.tab', function(e) {
+                    const target = e.target.getAttribute('href').replace('#', '');
+                    showResults(target);
+                });
+            });
+        });
+
+        // Fix for Add Keyword functionality
+        function addKeyword() {
+            const container = document.getElementById('keywordsList');
+            if (container) {
+                const newField = document.createElement('div');
+                newField.className = 'input-group mb-2';
+                newField.innerHTML = `
+                    <input type="text" class="form-control" name="keywords[]" placeholder="Enter keyword">
+                    <select class="form-select" name="keyword_types[]" style="max-width: 200px;">
+                        <option value="normal">Regular search</option>
+                        <option value="exact">Exact phrase</option>
+                        <option value="exclude">Exclude this</option>
+                    </select>
+                    <button type="button" class="btn btn-danger" onclick="removeKeyword(this)">Remove</button>
+                `;
+                container.appendChild(newField);
+            }
+        }
+
+        function removeKeyword(button) {
+            const group = button.closest('.input-group');
+            if (group && document.getElementById('keywordsList').children.length > 1) {
+                group.remove();
+            } else {
+                // If it's the last keyword field, just clear it instead of removing
+                const input = group.querySelector('input');
+                if (input) {
+                    input.value = '';
+                }
+            }
+        }
+
+        // Ensure at least one keyword field exists when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // ...existing code...
+            
+            const keywordsList = document.getElementById('keywordsList');
+            if (keywordsList && keywordsList.children.length === 0) {
+                addKeyword();
+            }
+        });
+        function createHistoryItem(item, accordionId) {
+            const itemId = `history-${item.source}-${item.search_ids[0]}-${accordionId}`;
+            const html = `
+                <div class="accordion-item history-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#${itemId}">
+                            <div class="d-flex justify-content-between align-items-center w-100">
+                                <div>
+                                    <span class="badge ${item.source}-badge me-2">${item.source}</span>
+                                    <strong>${item.query}</strong>
+                                </div>
+                                <div class="ms-3">
+                                    <span class="badge bg-info me-2">${item.search_count} searches</span>
+                                    <span class="badge bg-secondary">${item.total_results} total results</span>
+                                    ${item.had_changes ? '<span class="change-indicator change-modified ms-2">Changes Detected</span>' : ''}
+                                </div>
+                            </div>
+                        </button>
+                    </h2>
+                    <div id="${itemId}" class="accordion-collapse collapse" data-bs-parent="#${accordionId}">
+                        <div class="accordion-body">
+                            <div class="mb-3 d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-primary rerun-search" 
+                                        data-source="${item.source}" 
+                                        data-query="${encodeURIComponent(item.query)}">
+                                    <i class="bi bi-arrow-clockwise"></i> Rerun Search
+                                </button>
+                                <button class="btn btn-sm btn-outline-success schedule-search" 
+                                        data-source="${item.source}"
+                                        data-query="${encodeURIComponent(item.query)}"
+                                        onclick="toggleScheduleForm('${itemId}', '${item.source}', '${encodeURIComponent(item.query)}')">
+                                    <i class="bi bi-clock"></i> Schedule Search
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" 
+                                        onclick="loadSearchDetails('${item.source}', '${item.search_ids[0]}', '${accordionId}')">
+                                    <i class="bi bi-info-circle"></i> View History
+                                </button>
+                                <button class="btn btn-sm btn-outline-info" 
+                                        onclick="showInstanceSelector('${item.source}', '${item.search_ids[0]}', '${accordionId}')">
+                                    <i class="bi bi-clipboard2-data"></i> Compare Results
+                                </button>
+                            </div>
+                            <div id="${itemId}-details" class="search-details"></div>
+                            <div id="${itemId}-comparison" class="comparison-container" style="display: none;"></div>
+                            <div id="schedule-form-${itemId}" class="schedule-form mt-3" style="display: none;">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h6 class="card-title mb-0">Schedule Search</h6>
+                                            <button class="btn btn-info btn-sm" onclick="showScheduledSearches()">
+                                                <i class="bi bi-clock-history"></i> View Scheduled Searches
+                                            </button>
+                                        </div>
+                                        <form id="scheduleForm-${itemId}" class="schedule-inline-form">
+                                            <input type="hidden" name="source" value="">
+                                            <input type="hidden" name="query" value="">
+                                            
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Interval Type</label>
+                                                    <select class="form-select" name="intervalType">
+                                                        <option value="seconds">Seconds</option>
+                                                        <option value="minutes">Minutes</option>
+                                                        <option value="hours">Hours</option>
+                                                        <option value="days">Days</option>
+                                                        <option value="weeks">Weeks</option>
+                                                        <option value="months">Months</option>
+                                                    </select>
+                                                </div>
+                                                
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Interval Value</label>
+                                                    <input type="number" class="form-control" name="intervalValue" min="1" value="1">
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Start Time</label>
+                                                    <input type="datetime-local" class="form-control" name="startTime">
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <label class="form-label">End Time (Optional)</label>
+                                                    <input type="datetime-local" class="form-control" name="endTime">
+                                                </div>
+                                            </div>
+
+                                            <div class="mt-3">
+                                                <button type="button" class="btn btn-primary" onclick="scheduleSearch('${itemId}')">Schedule</button>
+                                                <button type="button" class="btn btn-secondary" onclick="toggleScheduleForm('${itemId}')">Cancel</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            return html;
+        }
+
+        function loadSearchDetails(source, searchId, accordionId) {
+            const detailsContainer = document.getElementById(`history-${source}-${searchId}-${accordionId}-details`);
+            
+            // Verifică dacă conținutul există și este vizibil
+            if (detailsContainer.innerHTML.trim() !== '' && detailsContainer.style.display !== 'none') {
+                // Dacă există conținut și este vizibil, îl ascundem
+                detailsContainer.style.display = 'none';
+                return;
+            }
+            
+            // Dacă conținutul există dar este ascuns, îl afișăm
+            if (detailsContainer.innerHTML.trim() !== '') {
+                detailsContainer.style.display = 'block';
+                return;
+            }
+
+            // Dacă nu există conținut, îl încărcăm
+            fetch(`/get_search_details/${source}/${searchId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        detailsContainer.innerHTML = `<div class="alert alert-warning">${data.error}</div>`;
+                        return;
+                    }
+
+                    // Grupăm toate instanțele căutării
+                    let instancesHtml = '<div class="search-instances">';
+                    
+                    // Sortăm instanțele după dată și oră
+                    data.instances.sort((a, b) => {
+                        const dateA = new Date(a.date + ' ' + a.time);
+                        const dateB = new Date(b.date + ' ' + b.time);
+                        return dateB - dateA;
+                    });
+
+                    // Generăm HTML pentru fiecare instanță
+                    data.instances.forEach((instance, index) => {
+                        const instanceId = `instance-${source}-${searchId}-${index}-${accordionId}`;
+                        instancesHtml += `
+                            <div class="instance-container mb-3">
+                                <div class="instance-header card">
+                                    <div class="card-header d-flex justify-content-between align-items-center" 
+                                         role="button" 
+                                         onclick="toggleInstanceResults('${instanceId}')">
+                                        <div>
+                                            <i class="bi bi-calendar-event me-2"></i>
+                                            <span class="fw-bold">Search from ${instance.date} at ${instance.time}</span>
+                                        </div>
+                                        <div>
+                                            <span class="badge bg-primary me-2">${instance.results.length} results</span>
+                                            <i class="bi bi-chevron-down toggle-icon"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="${instanceId}" class="instance-results collapse">
+                                    <div class="card-body">
+                                        <div class="results-list">
+                                            ${renderInstanceResults(instance.results, source)}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    instancesHtml += '</div>';
+                    detailsContainer.innerHTML = instancesHtml;
+                    detailsContainer.style.display = 'block';
+                })
+                .catch(error => {
+                    detailsContainer.innerHTML = `<div class="alert alert-danger">Error loading details: ${error}</div>`;
+                    detailsContainer.style.display = 'block';
+                });
+        }
+
+        function toggleInstanceResults(instanceId) {
+            const resultsContainer = document.getElementById(instanceId);
+            const header = resultsContainer.previousElementSibling;
+            const icon = header.querySelector('.toggle-icon');
+            
+            if (resultsContainer.classList.contains('show')) {
+                resultsContainer.classList.remove('show');
+                icon.classList.remove('bi-chevron-up');
+                icon.classList.add('bi-chevron-down');
+            } else {
+                resultsContainer.classList.add('show');
+                icon.classList.remove('bi-chevron-down');
+                icon.classList.add('bi-chevron-up');
+            }
+        }
+
+        function renderInstanceResults(results, source) {
+            let resultsHtml = '';
+            results.forEach(result => {
+                if (source === 'google') {
+                    resultsHtml += `
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <h6 class="card-title">${result.title}</h6>
+                                <p class="card-text small">${result.content}</p>
+                                <a href="${result.link}" class="btn btn-sm btn-primary" target="_blank">Visit</a>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    const username = result.username ? result.username.replace(/^@/, '') : 'Unknown User';
+                    resultsHtml += `
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="bi bi-twitter text-primary me-2"></i>
+                                    <h6 class="card-subtitle mb-0">@${username}</h6>
+                                </div>
+                                <p class="card-text">${result.content}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="metrics small text-muted">
+                                        <span class="me-2"><i class="bi bi-arrow-repeat"></i> ${result.metrics.reposts}</span>
+                                        <span class="me-2"><i class="bi bi-chat"></i> ${result.metrics.replies}</span>
+                                        <span><i class="bi bi-heart"></i> ${result.metrics.likes}</span>
+                                    </div>
+                                    <a href="${result.link}" class="btn btn-sm btn-primary" target="_blank">View Tweet</a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+            return resultsHtml;
+        }
+
+        // Update the updateHistoryLists function
+        function updateHistoryLists(historyData) {
+            const containers = {
+                all: document.querySelector('#allHistoryAccordion'),
+                google: document.querySelector('#googleHistoryAccordion'),
+                twitter: document.querySelector('#twitterHistoryAccordion')
+            };
+            
+            // Clear existing content
+            Object.values(containers).forEach(container => container.innerHTML = '');
+            
+            // Sort history items by date and time
+            historyData.sort((a, b) => {
+                const dateA = new Date(a.date + ' ' + a.time);
+                const dateB = new Date(b.date + ' ' + a.time);
+                return dateB - dateA;
+            });
+            
+            // Populate containers
+            historyData.forEach(item => {
+                // Add to all history
+                containers.all.innerHTML += createHistoryItem(item, 'allHistoryAccordion');
+                
+                // Add to source-specific history
+                if (item.source === 'google') {
+                    containers.google.innerHTML += createHistoryItem(item, 'googleHistoryAccordion');
+                } else {
+                    containers.twitter.innerHTML += createHistoryItem(item, 'twitterHistoryAccordion');
+                }
+            });
+        }
+
+        // Adăugați această nouă funcție pentru compararea rezultatelor
+        function compareSearchResults(source, searchId, accordionId) {
+            const comparisonContainer = document.getElementById(`history-${source}-${searchId}-${accordionId}-comparison`);
+            
+            if (comparisonContainer.style.display !== 'none') {
+                comparisonContainer.style.display = 'none';
+                return;
+            }
+
+            fetch(`/get_search_comparison/${source}/${searchId}`)
+                .then(response => response.json())
+                .then(data => {
+                    let comparisonHtml = `
+                        <div class="comparison-header">
+                            <i class="bi bi-clock-history"></i> Results Comparison
+                        </div>
+                        <div class="comparison-content">
+                            <div class="comparison-column">
+                                <div class="comparison-title">Previous Results</div>
+                                ${renderComparisonResults(data.previous_results, 'previous')}
+                            </div>
+                            <div class="comparison-column">
+                                <div class="comparison-title">Current Results</div>
+                                ${renderComparisonResults(data.current_results, 'current')}
+                            </div>
+                        </div>
+                        <div class="p-3">
+                            <h6>Changes Summary:</h6>
+                            <div class="d-flex gap-3">
+                                <span class="diff-indicator added">
+                                    <i class="bi bi-plus-circle"></i> ${data.changes.added} new
+                                </span>
+                                <span class="diff-indicator removed">
+                                    <i class="bi bi-dash-circle"></i> ${data.changes.removed} removed
+                                </span>
+                                <span class="diff-indicator changed">
+                                    <i class="bi bi-arrow-repeat"></i> ${data.changes.changed} changed
+                                </span>
+                            </div>
+                        </div>
+                    `;
+
+                    comparisonContainer.innerHTML = comparisonHtml;
+                    comparisonContainer.style.display = 'block';
+                })
+                .catch(error => {
+                    comparisonContainer.innerHTML = `
+                        <div class="alert alert-danger">
+                            Error loading comparison: ${error}
+                        </div>
+                    `;
+                    comparisonContainer.style.display = 'block';
+                });
+        }
+
+        function renderComparisonResults(results, type) {
+            let html = '';
+            results.forEach(result => {
+                let className = '';
+                let statusBadge = '';
+                let changesHtml = '';
+                
+                if (result.status === 'added') {
+                    className = 'diff-added';
+                    statusBadge = '<span class="diff-indicator added">New</span>';
+                } else if (result.status === 'removed') {
+                    className = 'diff-removed';
+                    statusBadge = '<span class="diff-indicator removed">Removed</span>';
+                } else if (result.status === 'changed') {
+                    className = 'diff-changed';
+                    statusBadge = '<span class="diff-indicator changed">Changed</span>';
+                    
+                    // Generate changes details
+                    if (result.changes) {
+                        changesHtml = '<div class="changes-details mt-2">';
+                        
+                        // Content changes
+                        if (result.changes.content) {
+                            changesHtml += `
+                                <div class="content-changes">
+                                    <div class="text-muted mb-1">Content changes:</div>
+                                    <div class="diff-old p-2 mb-1 bg-danger bg-opacity-10">
+                                        <i class="bi bi-dash-circle text-danger"></i> ${result.changes.content.old}
+                                    </div>
+                                    <div class="diff-new p-2 bg-success bg-opacity-10">
+                                        <i class="bi bi-plus-circle text-success"></i> ${result.changes.content.new}
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        
+                        // Metrics changes for Twitter
+                        if (result.changes.metrics) {
+                            changesHtml += '<div class="metrics-changes mt-2">';
+                            if (result.changes.metrics.replies) {
+                                const diff = result.changes.metrics.replies.diff;
+                                changesHtml += `
+                                    <div class="metric-diff ${diff > 0 ? 'text-success' : 'text-danger'}">
+                                        <i class="bi bi-chat"></i> Replies: ${result.changes.metrics.replies.old} → ${result.changes.metrics.replies.new}
+                                        (${diff > 0 ? '+' : ''}${diff})
+                                    </div>
+                                `;
+                            }
+                            if (result.changes.metrics.reposts) {
+                                const diff = result.changes.metrics.reposts.diff;
+                                changesHtml += `
+                                    <div class="metric-diff ${diff > 0 ? 'text-success' : 'text-danger'}">
+                                        <i class="bi bi-arrow-repeat"></i> Reposts: ${result.changes.metrics.reposts.old} → ${result.changes.metrics.reposts.new}
+                                        (${diff > 0 ? '+' : ''}${diff})
+                                    </div>
+                                `;
+                            }
+                            if (result.changes.metrics.likes) {
+                                const diff = result.changes.metrics.likes.diff;
+                                changesHtml += `
+                                    <div class="metric-diff ${diff > 0 ? 'text-success' : 'text-danger'}">
+                                        <i class="bi bi-heart"></i> Likes: ${result.changes.metrics.likes.old} → ${result.changes.metrics.likes.new}
+                                        (${diff > 0 ? '+' : ''}${diff})
+                                    </div>
+                                `;
+                            }
+                            changesHtml += '</div>';
+                        }
+                        
+                        changesHtml += '</div>';
+                    }
+                }
+
+                html += `
+                    <div class="result-item ${className}">
+                        ${statusBadge}
+                        <div class="mb-2">
+                            <strong>${result.title || result.username}</strong>
+                        </div>
+                        <p class="mb-2">${result.content || result.description}</p>
+                        ${renderMetrics(result)}
+                        ${changesHtml}
+                    </div>
+                    <hr>
+                `;
+            });
+            return html || '<p class="text-muted">No results</p>';
+        }
+
+        function renderMetrics(result) {
+            if (result.metrics) {
+                return `
+                    <div class="metrics small text-muted">
+                        <span class="me-2"><i class="bi bi-arrow-repeat"></i> ${result.metrics.reposts}</span>
+                        <span class="me-2"><i class="bi bi-chat"></i> ${result.metrics.replies}</span>
+                        <span><i class="bi bi-heart"></i> ${result.metrics.likes}</span>
+                    </div>
+                `;
+            }
+            return '';
+        }
+
+        function showInstanceSelector(source, searchId, accordionId) {
+            const comparisonContainer = document.getElementById(`history-${source}-${searchId}-${accordionId}-comparison`);
+            
+            // Dacă containerul este deja vizibil, îl ascundem
+            if (comparisonContainer.style.display !== 'none') {
+                comparisonContainer.style.display = 'none';
+                return;
+            }
+
+            // Încărcăm instanțele disponibile
+            fetch(`/get_search_details/${source}/${searchId}`)
+                .then(response => response.json())
+                .then(data => {
+                    let html = `
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">Select instances to compare</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="instances-list" id="instances-list-${searchId}">
+                    `;
+
+                    data.instances.forEach(instance => {
+                        html += `
+                            <div class="instance-selector">
+                                <input type="checkbox" 
+                                       id="instance_${instance.search_id}" 
+                                       value="${instance.search_id}"
+                                       class="form-check-input">
+                                <label class="form-check-label" for="instance_${instance.search_id}">
+                                    Search from ${instance.date} at ${instance.time}
+                                    <span class="badge bg-primary ms-2">${instance.results.length} results</span>
+                                </label>
+                            </div>
+                        `;
+                    });
+
+                    html += `
+                                </div>
+                                <button class="btn btn-primary" 
+                                        onclick="compareSelectedInstances('${source}', '${searchId}', '${accordionId}')">
+                                    Compare Selected
+                                </button>
+                            </div>
+                        </div>
+                        <div id="comparison-results-${accordionId}"></div>
+                    `;
+
+                    comparisonContainer.innerHTML = html;
+                    comparisonContainer.style.display = 'block';
+                });
+        }
+
+        function compareSelectedInstances(source, searchId, accordionId) {
+            // Folosim searchId pentru a găsi containerul corect
+            const instancesList = document.getElementById(`instances-list-${searchId}`);
+            if (!instancesList) {
+                console.error('Could not find instances list container');
+                return;
+            }
+
+            const selectedInstances = Array.from(instancesList.querySelectorAll('input[type="checkbox"]:checked'))
+                .map(checkbox => checkbox.value);
+
+            console.log('Selected instances:', selectedInstances); // Pentru debugging
+
+            if (selectedInstances.length < 2) {
+                alert('Please select at least 2 instances to compare');
+                return;
+            }
+
+            fetch('/compare_instances', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    source: source,
+                    instances: selectedInstances
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+                displayComparisonResults(data, accordionId);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while comparing instances');
+            });
+        }
+
+        function displayComparisonResults(data, accordionId) {
+            const resultsContainer = document.getElementById(`comparison-results-${accordionId}`);
+            
+            // Sortăm instanțele cronologic
+            const sortedInstances = data.instances.sort((a, b) => {
+                const dateA = new Date(a.date + ' ' + a.time);
+                const dateB = new Date(b.date + ' ' + b.time);
+                return dateA - dateB;
+            });
+
+            let html = `
+                <div class="timeline-comparison">
+                    <div class="timeline-tracks">
+                        ${sortedInstances.map(() => `<div class="timeline-track"></div>`).join('')}
+                    </div>
+                    <div class="timeline-header">
+                        ${sortedInstances.map((instance, idx) => `
+                            <div class="timeline-header-item">
+                                <i class="bi bi-calendar-event me-2"></i>
+                                ${instance.date} at ${instance.time}
+                                ${idx < sortedInstances.length - 1 ? '<i class="bi bi-arrow-right result-arrow"></i>' : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+            `;
+
+            // Grupăm rezultatele similare
+            const resultGroups = groupSimilarResults(sortedInstances);
+            
+            // Afișăm rezultatele grupate
+            resultGroups.matched.forEach(group => {
+                html += `
+                    <div class="result-group">
+                        <div class="result-row">
+                            ${group.map((result, index) => {
+                                const similarityClass = result.similarityScore ? 
+                                    (result.similarityScore > 0.85 ? 'high-similarity' :
+                                     result.similarityScore > 0.70 ? 'medium-similarity' :
+                                     'low-similarity') : '';
+                                     
+                                // Verificăm dacă există similaritate cu următorul rezultat
+                                const hasNextSimilarity = index < group.length - 1 && 
+                                                        group[index + 1].similarityScore > 0;
+                                
+                                return `
+                                    <div class="result-cell ${similarityClass} ${!hasNextSimilarity ? 'no-similarity' : ''}">
+                                        ${renderResultContent(result, data.source)}
+                                        ${hasNextSimilarity ? 
+                                            `<i class="bi bi-arrow-right result-arrow show"></i>` : 
+                                            ''}
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Secțiunea pentru rezultate adăugate/eliminate folosește același grid
+            if (resultGroups.unmatched.length > 0) {
+                html += `
+                    <div class="changes-section">
+                        <div class="changes-header">
+                            <i class="bi bi-plus-slash-minus"></i> Added/Removed Results
+                        </div>
+                        ${resultGroups.unmatched.map(result => `
+                            <div class="result-row">
+                                ${sortedInstances.map((instance, idx) => `
+                                    <div class="result-cell ${
+                                        result.instanceIndex === idx ? 
+                                        (result.status === 'added' ? 'diff-add' : 'diff-remove') : 
+                                        'empty-cell'
+                                    }">
+                                        ${result.instanceIndex === idx ? renderResultContent(result, data.source) : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            html += '</div>';
+            resultsContainer.innerHTML = html;
+        }
+
+        function groupSimilarResults(instances) {
+            const groups = {
+                matched: [],
+                unmatched: []
+            };
+
+            const processedResults = instances.map(() => new Set());
+            
+            // Pentru fiecare rezultat din prima instanță
+            instances[0].results.forEach((baseResult, baseIndex) => {
+                const group = [{ ...baseResult, instanceIndex: 0 }];
+                processedResults[0].add(baseIndex);
+                
+                let lastMatchedResult = baseResult;
+                let foundMatch = false;
+
+                // Array pentru a stoca rezultatele din acest grup pentru fiecare instanță
+                const groupResults = new Array(instances.length).fill(null);
+                groupResults[0] = { ...baseResult, instanceIndex: 0 };
+
+                // Căutăm rezultate similare în instanțele următoare
+                for (let i = 1; i < instances.length; i++) {
+                    const instance = instances[i];
+                    let bestMatch = null;
+                    let bestScore = 0;
+                    let bestIndex = -1;
+
+                    // Căutăm cel mai similar rezultat care nu a fost încă procesat
+                    instance.results.forEach((candidateResult, idx) => {
+                        if (!processedResults[i].has(idx)) {
+                            const score = calculateContentSimilarity(lastMatchedResult, candidateResult);
+                            if (score > bestScore && score > 0.3) {
+                                bestScore = score;
+                                bestMatch = candidateResult;
+                                bestIndex = idx;
+                            }
+                        }
+                    });
+
+                    if (bestMatch) {
+                        processedResults[i].add(bestIndex);
+                        groupResults[i] = { ...bestMatch, instanceIndex: i, similarityScore: bestScore };
+                        lastMatchedResult = bestMatch;
+                        foundMatch = true;
+                    }
+                }
+
+                // Verificăm rezultatele neprocesate pentru fiecare instanță
+                for (let i = 1; i < instances.length; i++) {
+                    if (!groupResults[i]) {
+                        // Căutăm primul rezultat neprocesat din această instanță
+                        const unprocessedIndex = instances[i].results.findIndex((_, idx) => !processedResults[i].has(idx));
+                        if (unprocessedIndex !== -1) {
+                            const newResult = instances[i].results[unprocessedIndex];
+                            processedResults[i].add(unprocessedIndex);
+                            groupResults[i] = { ...newResult, instanceIndex: i, status: 'added' };
+                        }
+                    }
+                }
+
+                // Adăugăm grupul doar dacă conține cel puțin un rezultat
+                if (foundMatch || groupResults.some((r, idx) => idx > 0 && r !== null)) {
+                    groups.matched.push(groupResults.filter(r => r !== null));
+                } else {
+                    groups.unmatched.push({
+                        ...baseResult,
+                        instanceIndex: 0,
+                        status: 'removed'
+                    });
+                }
+            });
+
+            // Verificăm dacă mai sunt rezultate neprocesate în instanțele ulterioare
+            for (let i = 1; i < instances.length; i++) {
+                instances[i].results.forEach((result, idx) => {
+                    if (!processedResults[i].has(idx)) {
+                        groups.unmatched.push({
+                            ...result,
+                            instanceIndex: i,
+                            status: 'added'
+                        });
+                    }
+                });
+            }
+
+            return groups;
+        }
+
+        function calculateContentSimilarity(result1, result2) {
+            // Calculăm similaritatea bazată pe conținut
+            let score = 0;
+            let totalWeight = 0;
+
+            // Comparăm conținutul
+            if (result1.content && result2.content) {
+                const contentScore = calculateTextSimilarity(result1.content, result2.content);
+                score += contentScore * 0.6; // Conținutul are o pondere de 60%
+                totalWeight += 0.6;
+            }
+
+            // Comparăm titlurile pentru Google sau username-urile pentru Twitter
+            if (result1.title && result2.title) {
+                const titleScore = calculateTextSimilarity(result1.title, result2.title);
+                score += titleScore * 0.3; // Titlul are o pondere de 30%
+                totalWeight += 0.3;
+            } else if (result1.username && result2.username) {
+                const usernameScore = result1.username === result2.username ? 1 : 0;
+                score += usernameScore * 0.3;
+                totalWeight += 0.3;
+            }
+
+            // Pentru Twitter, comparăm și metricile
+            if (result1.metrics && result2.metrics) {
+                const metricsScore = calculateMetricsSimilarity(result1.metrics, result2.metrics);
+                score += metricsScore * 0.1; // Metricile au o pondere de 10%
+                totalWeight += 0.1;
+            }
+
+            // Normalizăm scorul în funcție de ponderile folosite
+            return totalWeight > 0 ? score / totalWeight : 0;
+        }
+
+        // ...existing code...
+
+        function renderResultContent(result, source) {
+            const hasOnlyMetricChanges = result.changes && 
+                                        Object.keys(result.changes).length === 1 && 
+                                        result.changes.metrics;
+
+            const containerClass = hasOnlyMetricChanges ? '' : (result.status ? `diff-${result.status}` : '');
+
+            const renderDiffText = (diffs) => {
+                if (!diffs) return '';
+                return diffs.map(([type, text]) => {
+                    const className = result.status === 'unchanged' ? 'diff-unchanged' : `diff-${type}`;
+                    return `<span class="${className}">${text}</span>`;
+                }).join('');
+            };
+
+            // Instead of calculating similarity here, just use the value from app.py
+            const similarityScore = result.similarityScore || null;
+
+            const renderSimilarityBadge = (score, status) => {
+                let badgeClass, badgeText, icon;
+        
+                if (status === 'added') {
+                    badgeClass = 'new';
+                    badgeText = 'New Result';
+                    icon = 'bi-plus-circle';
+                } else if (score === null || score === 0) {
+                    badgeClass = 'unrelated';
+                    badgeText = 'Unrelated';
+                    icon = 'bi-x-circle';
+                } else {
+                    const percentage = Math.round(score * 100);
+                    badgeClass = percentage === 100 ? 'perfect' : 
+                                percentage >= 85 ? 'high' :
+                                percentage >= 70 ? 'medium' : 'low';
+                    badgeText = `${percentage}% similar`;
+                    icon = percentage === 100 ? 'bi-check-circle' : 'bi-arrow-repeat';
+                }
+        
+                return `
+                    <div class="metrics-similarity">
+                        <div class="similarity-badge ${badgeClass}">
+                            <i class="bi ${icon}"></i>
+                            ${badgeText}
+                        </div>
+                    </div>
+                `;
+            };
+
+            let content = '';
+            if (source === 'google') {
+                content = `
+                    <div class="result-content">
+                        ${renderSimilarityBadge(similarityScore, result.status)}
+                        <h6>${result.title_diff ? renderDiffText(result.title_diff) : result.title}</h6>
+                        <p>${result.content_diff ? renderDiffText(result.content_diff) : result.content}</p>
+                        <small class="text-muted">${result.link}</small>
+                    </div>
+                `;
+            } else {
+                content = `
+                    <div class="result-content">
+                        ${renderSimilarityBadge(similarityScore, result.status)}
+                        <h6>@${result.username}</h6>
+                        <p>${result.content_diff ? renderDiffText(result.content_diff) : result.content}</p>
+                    </div>
+                    <div class="metrics-container">
+                        ${renderMetricChanges(result.metrics, result.metrics_changes, result.instanceIndex === 0, false)} <!-- Added false parameter -->
+                    </div>
+                `;
+            }
+
+            const visitButton = `<div class="button-container"><a href="${result.link}" target="_blank" class="btn btn-sm btn-primary">Visit</a></div>`;
+
+            return `<div class="result-item ${containerClass}">${content}${visitButton}</div>`;
+        }
+
+        function renderMetricChanges(metrics, changes, isFirstInstance = false, showSimilarityBadge = true) {
+            // Calculăm numărul total de metrici modificate
+            const differentMetrics = changes ? Object.keys(changes).length : 0;
+            
+            // Calculăm similaritatea bazată pe numărul de metrici diferite
+            const METRIC_WEIGHTS = {
+                0: 1.0,    // 100% similar - nicio diferență
+                1: 0.85,   // 85% similar - o metrică diferită
+                2: 0.70,   // 70% similar - două metrici diferite
+                3: 0.55    // 55% similar - toate metricile diferite
+            };
+            
+            const similarityScore = METRIC_WEIGHTS[differentMetrics];
+            
+            let metricsHtml = `<div class="metrics d-flex gap-2 align-items-center">`;
+
+            // Only add similarity badge if showSimilarityBadge is true
+            if (!isFirstInstance && showSimilarityBadge) {
+                const score = Math.round(similarityScore * 100);
+                const badgeClass = score === 100 ? 'perfect' : 
+                                  score >= 85 ? 'high' :
+                                  score >= 70 ? 'medium' : 'low';
+                
+                metricsHtml += `
+                    <div class="metrics-similarity">
+                        <div class="similarity-badge ${badgeClass}">
+                            <i class="bi ${score === 100 ? 'bi-check-circle' : 'bi-arrow-repeat'}"></i>
+                            ${score}% similar
+                        </div>
+                    </div>
+                `;
+            }
+
+            ['replies', 'reposts', 'likes'].forEach(metricType => {
+                const hasChange = changes && changes[metricType];
+                const metricClass = hasChange ? 'metric-item changed' : 'metric-item';
+                const value = metrics[metricType];
+                const diff = hasChange ? changes[metricType].diff : null;
+
+                metricsHtml += `
+                    <div class="${metricClass}">
+                        <i class="bi bi-${metricType === 'replies' ? 'chat' : 
+                                        metricType === 'reposts' ? 'arrow-repeat' : 
+                                        'heart'}"></i>
+                        <span class="metric-value">${value}</span>
+                        ${diff !== null ? `
+                            <span class="metric-diff ${diff > 0 ? 'text-success' : 'text-danger'}">
+                                (${diff > 0 ? '+' : ''}${diff})
+                            </span>
+                        ` : ''}
+                    </div>
+                `;
+            });
+
+            metricsHtml += `</div>`;
+            return metricsHtml;
+        }
+
+        function calculateTextSimilarity(text1, text2) {
+            // Implementare simplificată a distanței Levenshtein
+            const longer = text1.length > text2.length ? text1 : text2;
+            const shorter = text1.length > text2.length ? text2 : text1;
+            
+            if (longer.length === 0) return 1.0;
+            
+            const editDistance = levenshteinDistance(longer, shorter);
+            return (longer.length - editDistance) / longer.length;
+        }
+
+        function levenshteinDistance(s1, s2) {
+            if (s1.length === 0) return s2.length;
+            if (s2.length === 0) return s1.length;
+
+            const matrix = Array(s2.length + 1).fill(null)
+                .map(() => Array(s1.length + 1).fill(null));
+
+            for (let i = 0; i <= s1.length; i++) matrix[0][i] = i;
+            for (let j = 0; j <= s2.length; j++) matrix[j][0] = j;
+
+            for (let j = 1; j <= s2.length; j++) {
+                for (let i = 1; i <= s1.length; i++) {
+                    const substitutionCost = s1[i - 1] === s2[j - 1] ? 0 : 1;
+                    matrix[j][i] = Math.min(
+                        matrix[j][i - 1] + 1,
+                        matrix[j - 1][i] + 1,
+                        matrix[j - 1][i - 1] + substitutionCost
+                    );
+                }
+            }
+
+            return matrix[s2.length][s1.length];
+        }
+
+        function calculateMetricsSimilarity(metrics1, metrics2) {
+            const keys = ['replies', 'reposts', 'likes'];
+            let totalDiff = 0;
+            
+            keys.forEach(key => {
+                const val1 = metrics1[key] || 0;
+                const val2 = metrics2[key] || 0;
+                const maxVal = Math.max(val1, val2);
+                if (maxVal > 0) {
+                    totalDiff += Math.abs(val1 - val2) / maxVal;
+                }
+            });
+
+            return 1 - (totalDiff / keys.length);
+        }
+
+        function getSimilarityClass(score) {
+            if (!score) return '';
+            if (score > 0.8) return 'high-similarity';
+            if (score > 0.5) return 'medium-similarity';
+            return 'low-similarity';
+        }
+
+        function renderResultContent(result, source) {
+            const hasOnlyMetricChanges = result.changes && 
+                                        Object.keys(result.changes).length === 1 && 
+                                        result.changes.metrics;
+
+            const containerClass = hasOnlyMetricChanges ? '' : (result.status ? `diff-${result.status}` : '');
+
+            const renderDiffText = (diffs) => {
+                if (!diffs) return '';
+                return diffs.map(([type, text]) => {
+                    const className = result.status === 'unchanged' ? 'diff-unchanged' : `diff-${type}`;
+                    return `<span class="${className}">${text}</span>`;
+                }).join('');
+            };
+
+            // Instead of calculating similarity here, just use the value from app.py
+            const similarityScore = result.similarityScore || null;
+
+            const renderSimilarityBadge = (score, status) => {
+                let badgeClass, badgeText, icon;
+        
+                if (status === 'added') {
+                    badgeClass = 'new';
+                    badgeText = 'New Result';
+                    icon = 'bi-plus-circle';
+                } else if (score === null || score === 0) {
+                    badgeClass = 'unrelated';
+                    badgeText = 'Unrelated';
+                    icon = 'bi-x-circle';
+                } else {
+                    const percentage = Math.round(score * 100);
+                    badgeClass = percentage === 100 ? 'perfect' : 
+                                percentage >= 85 ? 'high' :
+                                percentage >= 70 ? 'medium' : 'low';
+                    badgeText = `${percentage}% similar`;
+                    icon = percentage === 100 ? 'bi-check-circle' : 'bi-arrow-repeat';
+                }
+        
+                return `
+                    <div class="metrics-similarity">
+                        <div class="similarity-badge ${badgeClass}">
+                            <i class="bi ${icon}"></i>
+                            ${badgeText}
+                        </div>
+                    </div>
+                `;
+            };
+
+            let content = '';
+            if (source === 'google') {
+                content = `
+                    <div class="result-content">
+                        ${renderSimilarityBadge(similarityScore, result.status)}
+                        <h6>${result.title_diff ? renderDiffText(result.title_diff) : result.title}</h6>
+                        <p>${result.content_diff ? renderDiffText(result.content_diff) : result.content}</p>
+                        <small class="text-muted">${result.link}</small>
+                    </div>
+                `;
+            } else {
+                content = `
+                    <div class="result-content">
+                        ${renderSimilarityBadge(similarityScore, result.status)}
+                        <h6>@${result.username}</h6>
+                        <p>${result.content_diff ? renderDiffText(result.content_diff) : result.content}</p>
+                    </div>
+                    <div class="metrics-container">
+                        ${renderMetricChanges(result.metrics, result.metrics_changes, result.instanceIndex === 0, false)} <!-- Added false parameter -->
+                    </div>
+                `;
+            }
+
+            const visitButton = `<div class="button-container"><a href="${result.link}" target="_blank" class="btn btn-sm btn-primary">Visit</a></div>`;
+
+            return `<div class="result-item ${containerClass}">${content}${visitButton}</div>`;
+        }
+
+        function renderMetricChanges(metrics, changes, isFirstInstance = false, showSimilarityBadge = true) {
+            // Calculăm numărul total de metrici modificate
+            const differentMetrics = changes ? Object.keys(changes).length : 0;
+            
+            // Calculăm similaritatea bazată pe numărul de metrici diferite
+            const METRIC_WEIGHTS = {
+                0: 1.0,    // 100% similar - nicio diferență
+                1: 0.85,   // 85% similar - o metrică diferită
+                2: 0.70,   // 70% similar - două metrici diferite
+                3: 0.55    // 55% similar - toate metricile diferite
+            };
+            
+            const similarityScore = METRIC_WEIGHTS[differentMetrics];
+            
+            let metricsHtml = `<div class="metrics d-flex gap-2 align-items-center">`;
+
+            // Only add similarity badge if showSimilarityBadge is true
+            if (!isFirstInstance && showSimilarityBadge) {
+                const score = Math.round(similarityScore * 100);
+                const badgeClass = score === 100 ? 'perfect' : 
+                                  score >= 85 ? 'high' :
+                                  score >= 70 ? 'medium' : 'low';
+                
+                metricsHtml += `
+                    <div class="metrics-similarity">
+                        <div class="similarity-badge ${badgeClass}">
+                            <i class="bi ${score === 100 ? 'bi-check-circle' : 'bi-arrow-repeat'}"></i>
+                            ${score}% similar
+                        </div>
+                    </div>
+                `;
+            }
+
+            ['replies', 'reposts', 'likes'].forEach(metricType => {
+                const hasChange = changes && changes[metricType];
+                const metricClass = hasChange ? 'metric-item changed' : 'metric-item';
+                const value = metrics[metricType];
+                const diff = hasChange ? changes[metricType].diff : null;
+
+                metricsHtml += `
+                    <div class="${metricClass}">
+                        <i class="bi bi-${metricType === 'replies' ? 'chat' : 
+                                        metricType === 'reposts' ? 'arrow-repeat' : 
+                                        'heart'}"></i>
+                        <span class="metric-value">${value}</span>
+                        ${diff !== null ? `
+                            <span class="metric-diff ${diff > 0 ? 'text-success' : 'text-danger'}">
+                                (${diff > 0 ? '+' : ''}${diff})
+                            </span>
+                        ` : ''}
+                    </div>
+                `;
+            });
+
+            metricsHtml += `</div>`;
+            return metricsHtml;
+        }
+
+        // Add this event handler after the existing JavaScript code
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.rerun-search')) {
+                const button = e.target.closest('.rerun-search');
+                const source = button.dataset.source;
+                const query = decodeURIComponent(button.dataset.query);
+                
+                // Create a form and submit it
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = source === 'google' ? '/search' : '/search_twitter';
+                
+                if (source === 'google') {
+                    const queryInput = document.createElement('input');
+                    queryInput.type = 'hidden';
+                    queryInput.name = 'query';
+                    queryInput.value = query;
+                    form.appendChild(queryInput);
+                } else {
+                    // For Twitter, parse the query and create appropriate form fields
+                    const keywordInput = document.createElement('input');
+                    keywordInput.type = 'hidden';
+                    keywordInput.name = 'keywords[]';
+                    keywordInput.value = query;
+                    form.appendChild(keywordInput);
+                    
+                    const keywordTypeInput = document.createElement('input');
+                    keywordTypeInput.type = 'hidden';
+                    keywordTypeInput.name = 'keyword_types[]';
+                    keywordTypeInput.value = 'normal';
+                    form.appendChild(keywordTypeInput);
+                }
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+
+        function toggleScheduleForm(itemId, source, query) {
+            const formContainer = document.getElementById(`schedule-form-${itemId}`);
+            
+            if (formContainer.style.display === 'none') {
+                // Show form and set values
+                const form = document.getElementById(`scheduleForm-${itemId}`);
+                form.querySelector('input[name="source"]').value = source;
+                form.querySelector('input[name="query"]').value = decodeURIComponent(query);
+                
+                // Set default start time to now
+                const now = new Date();
+                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                form.querySelector('input[name="startTime"]').value = now.toISOString().slice(0, 16);
+                
+                formContainer.style.display = 'block';
+            } else {
+                formContainer.style.display = 'none';
+            }
+        }
+
+        function scheduleSearch(itemId) {
+            const form = document.getElementById(`scheduleForm-${itemId}`);
+            const formData = new FormData(form);
+            
+            fetch('/schedule_search', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Search scheduled successfully!');
+                    toggleScheduleForm(itemId); // Hide the form
+                } else {
+                    alert('Error scheduling search: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error scheduling search');
+            });
+        }
+
+        function showScheduledSearches() {
+            fetch('/get_scheduled_searches')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('scheduledSearchesTable');
+                    tableBody.innerHTML = '';
+                    
+                    data.forEach(job => {
+                        const isExpired = job.end_time && new Date(job.end_time) < new Date() ||
+                                        (job.next_run && new Date(job.next_run) < new Date() && !job.end_time);
+                                        
+                        const status = isExpired ? 'stopped' : job.status;
+                        
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${job.source}</td>
+                            <td>${job.query}</td>
+                            <td>${job.interval}</td>
+                            <td>${job.next_run_formatted}</td>
+                            <td>
+                                ${status === 'active' ? 
+                                    `<button class="btn btn-danger btn-sm" onclick="stopScheduledSearch('${job.job_id}')">
+                                        <i class="bi bi-stop-circle"></i> Stop
+                                    </button>` : 
+                                    `<span class="badge bg-secondary">Stopped</span>`
+                                }
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('scheduledSearchesModal'));
+                    modal.show();
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Add auto-refresh functionality
+        let refreshInterval;
+
+        document.getElementById('scheduledSearchesModal').addEventListener('show.bs.modal', function () {
+            // Refresh the list every 30 seconds
+            refreshInterval = setInterval(showScheduledSearches, 30000);
+        });
+
+        document.getElementById('scheduledSearchesModal').addEventListener('hide.bs.modal', function () {
+            // Clear the refresh interval when modal is closed
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        });
+
+        function stopScheduledSearch(jobId) {
+            if (!jobId) {
+                console.error('No job ID provided');
+                return;
+            }
+            
+            if (confirm('Are you sure you want to stop this scheduled search?')) {
+                fetch('/stop_scheduled_search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ job_id: jobId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Refresh the scheduled searches list
+                        showScheduledSearches();
+                    } else {
+                        alert('Error stopping search: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error stopping scheduled search');
+                });
+            }
+        }
+    </script>
+</body>
+</html>

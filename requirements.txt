@@ -1,0 +1,10 @@
+flask
+googlesearch-python
+mysql-connector-python
+beautifulsoup4
+requests
+pypdf2
+selenium
+diff-match-patch
+concurrent-log-handler
+apscheduler
