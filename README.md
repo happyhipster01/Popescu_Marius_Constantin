@@ -333,7 +333,7 @@ python app.py
 
 #### Eroare conexiune MySQL
 - Verificați că serviciul MySQL rulează
-- Verificați credențialele în app.py
+- Verificați credențialele în config.py
 - Testați conexiunea manual:
 ```bash
 mysql -u root -p
